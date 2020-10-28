@@ -68,6 +68,8 @@ namespace VAdvantage.Model
             SetClientOrg(parent);
             SetAD_User_ID(AD_User_ID);
             SetR_MailText_ID(parent.GetR_MailText_ID());
+            SetSubject(mail.GetSubject());
+            SetMailText(mail.GetMessageCRLF());
             //
             if (mail.IsSentOK())
             {
