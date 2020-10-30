@@ -687,7 +687,7 @@ using VAdvantage.ProcessEngine;namespace VAdvantage.Process
                 AND e.ColumnName<>f.ColumnName);
             */
             sql = "	UPDATE AD_Process_Para f" +
-                    " SET ColumnName = (SELECT e.ColumnName FROM AD_Element e" +
+                    " SET ColumnName = (SELECT DISTINCT e.ColumnName FROM AD_Element e" +
                     " WHERE UPPER(e.ColumnName)=UPPER(f.ColumnName))" +
                     " WHERE f.IsCentrallyMaintained='Y' AND f.IsActive='Y'" +
                     " AND EXISTS (SELECT * FROM AD_Element e" +
