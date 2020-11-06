@@ -479,30 +479,30 @@ namespace VAdvantage.Controller
                 catch
                 {
                 }
-
+                
                 /***************Worked For Header Panel By Karan*****************/
-                vo.IsHeaderPanel = dr["Isheaderpanel"].Equals("Y");
+                //vo.IsHeaderPanel = dr["Isheaderpanel"].Equals("Y");
 
-                vo.AD_HeaderLayout_ID = Util.GetValueOfInt(dr["AD_HeaderLayout_ID"]);
+                //vo.AD_HeaderLayout_ID = Util.GetValueOfInt(dr["AD_HeaderLayout_ID"]);
 
-                vo.HeaderAlignment = Utility.Util.GetValueOfString(dr["HeaderAlignment"]);
+                //vo.HeaderAlignment = Utility.Util.GetValueOfString(dr["HeaderAlignment"]);
 
-                vo.TabPanelAlignment = Utility.Util.GetValueOfString(dr["TabPanelAlignment"]);
+                //vo.TabPanelAlignment = Utility.Util.GetValueOfString(dr["TabPanelAlignment"]);
 
-                vo.HeaderHeight = Utility.Util.GetValueOfDecimal(dr["Height"]);
+                //vo.HeaderHeight = Utility.Util.GetValueOfDecimal(dr["Height"]);
 
-                vo.HeaderWidth = Utility.Util.GetValueOfDecimal(dr["Width"]);
+                //vo.HeaderWidth = Utility.Util.GetValueOfDecimal(dr["Width"]);
 
-                vo.HeaderPadding = Utility.Util.GetValueOfString(dr["Padding"]);
+                //vo.HeaderPadding = Utility.Util.GetValueOfString(dr["Padding"]);
 
-                vo.HeaderBackColor = Utility.Util.GetValueOfString(dr["HeaderBackgroundColor"]);
+                //vo.HeaderBackColor = Utility.Util.GetValueOfString(dr["HeaderBackgroundColor"]);
 
-                /***************** End Header panel work ***************/
+                ///***************** End Header panel work ***************/
 
-                // set property for Maintain version on approval
-                vo.MaintainVerOnApproval = Utility.Util.GetValueOfString(dr["MaintainVerOnApproval"]).Equals("Y");
+                //// set property for Maintain version on approval
+                //vo.MaintainVerOnApproval = Utility.Util.GetValueOfString(dr["MaintainVerOnApproval"]).Equals("Y");
 
-                vo.IsMaintainVersions = Utility.Util.GetValueOfString(dr["IsMaintainVersions"]).Equals("Y");
+                //vo.IsMaintainVersions = Utility.Util.GetValueOfString(dr["IsMaintainVersions"]).Equals("Y");
 
             }
             catch (System.Exception ex)

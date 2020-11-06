@@ -66,7 +66,7 @@ namespace VIS.Controllers
                          .Append(", isRTL:").Append(ctx.GetIsRightToLeft() ? "1" : "0")
                          .Append(", isBasicDB:").Append(ctx.GetIsBasicDB() ? "1" : "0")
                          .Append(", isSSL:").Append((Request.Url.Scheme != Uri.UriSchemeHttps ? "0" : "1")) //TODO
-                         .Append(", theme:").Append("'").Append(GetThemeInfo(ctx)).Append("'") //TODO
+                        // .Append(", theme:").Append("'").Append(GetThemeInfo(ctx)).Append("'") //TODO
                          .Append("},");
 
                 sb.Append("I18N: { }, context: { }");

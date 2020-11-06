@@ -89,7 +89,7 @@ namespace VAdvantage.Model
                 + "c.IsKey,c.IsParent, "										//	10..11
                 + "c.AD_Reference_Value_ID, vr.Code, "							//	12..13
                 + "c.FieldLength, c.ValueMin, c.ValueMax, c.IsTranslated, "		//	14..17
-                + "t.AccessLevel, c.ColumnSQL, c.IsEncrypted , c.IsCopy ");				//	18..21
+                + "t.AccessLevel, c.ColumnSQL, c.IsEncrypted , 'N' as IsCopy ");				//	18..21
             sql.Append("FROM AD_Table t"
                 + " INNER JOIN AD_Column c ON (t.AD_Table_ID=c.AD_Table_ID)"
                 + " LEFT OUTER JOIN AD_Val_Rule vr ON (c.AD_Val_Rule_ID=vr.AD_Val_Rule_ID)"

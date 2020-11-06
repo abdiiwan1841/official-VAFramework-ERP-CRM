@@ -151,7 +151,6 @@ namespace VIS.Controllers
 
                     ctx.SetContext(VAdvantage.Utility.Env.LANGUAGE, l.GetAD_Language());
                     ctx.SetContext(VAdvantage.Utility.Env.ISRIGHTTOLEFT, VAdvantage.Utility.Env.IsRightToLeft(loginLang) ? "Y" : "N");
-                    new VAdvantage.Login.LoginProcess(ctx).LoadSysConfig();
                     LoginHelper.SetSysConfigInContext(ctx);
 
                     ViewBag.culture = ctx.GetAD_Language();

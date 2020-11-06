@@ -67,7 +67,7 @@ namespace VIS.Helpers
 
 
 
-            DataSet dsUserInfo = DB.ExecuteDataset("SELECT AD_User_ID, Value, Password,IsLoginUser,FailedLoginCount, IsOnlyLDAP FROM AD_User WHERE Value=@username", param);
+            DataSet dsUserInfo = DB.ExecuteDataset("SELECT AD_User_ID, Value, Password,IsLoginUser FROM AD_User WHERE Value=@username", param);
             if (dsUserInfo != null && dsUserInfo.Tables[0].Rows.Count > 0)
             {
                 // skipped Login user check for SuperUser (100)
@@ -103,35 +103,35 @@ namespace VIS.Helpers
                 }
 
                 //  DataSet dsUserInfo = DB.ExecuteDataset("SELECT AD_User_ID, Value, Password,IsLoginUser,FailedLoginCount FROM AD_User WHERE Value=@username", param);
-                if (dsUserInfo != null && dsUserInfo.Tables[0].Rows.Count > 0)
-                {
-                    //if username or password is not matching
-                    if ((!dsUserInfo.Tables[0].Rows[0]["Value"].Equals(model.Login1Model.UserValue) ||
-                        !dsUserInfo.Tables[0].Rows[0]["Password"].Equals(model.Login1Model.Password))
-                        || (originalpwd != null && SecureEngine.IsEncrypted(originalpwd)))
-                    {
-                        //if current user is Not superuser, then increase failed login count
-                        if (!cache["SuperUserVal"].Equals(model.Login1Model.UserValue))
-                        {
-                            param[0] = new SqlParameter("@username", model.Login1Model.UserValue);
-                            int count = DB.ExecuteQuery("UPDATE AD_User Set FAILEDLOGINCOUNT=FAILEDLOGINCOUNT+1 WHERE Value=@username ", param);
+                //if (dsUserInfo != null && dsUserInfo.Tables[0].Rows.Count > 0)
+                //{
+                //    //if username or password is not matching
+                //    if ((!dsUserInfo.Tables[0].Rows[0]["Value"].Equals(model.Login1Model.UserValue) ||
+                //        !dsUserInfo.Tables[0].Rows[0]["Password"].Equals(model.Login1Model.Password))
+                //        || (originalpwd != null && SecureEngine.IsEncrypted(originalpwd)))
+                //    {
+                //        //if current user is Not superuser, then increase failed login count
+                //        if (!cache["SuperUserVal"].Equals(model.Login1Model.UserValue))
+                //        {
+                //            param[0] = new SqlParameter("@username", model.Login1Model.UserValue);
+                //            int count = DB.ExecuteQuery("UPDATE AD_User Set FAILEDLOGINCOUNT=FAILEDLOGINCOUNT+1 WHERE Value=@username ", param);
 
-                            if (fCount > 0 && fCount <= Util.GetValueOfInt(dsUserInfo.Tables[0].Rows[0]["FailedLoginCount"]) + 1)
-                            {
-                                throw new Exception("MaxFailedLoginAttempts");
-                            }
-                        }
+                //            if (fCount > 0 && fCount <= Util.GetValueOfInt(dsUserInfo.Tables[0].Rows[0]["FailedLoginCount"]) + 1)
+                //            {
+                //                throw new Exception("MaxFailedLoginAttempts");
+                //            }
+                //        }
 
-                        throw new Exception("UserPwdError");
-                    }
-                    else// if username and password matched, then check if account is locked or not
-                    {
-                        if (fCount > 0 && fCount <= Util.GetValueOfInt(dsUserInfo.Tables[0].Rows[0]["FailedLoginCount"]))
-                        {
-                            throw new Exception("MaxFailedLoginAttempts");
-                        }
-                    }
-                }
+                //        throw new Exception("UserPwdError");
+                //    }
+                //    else// if username and password matched, then check if account is locked or not
+                //    {
+                //        if (fCount > 0 && fCount <= Util.GetValueOfInt(dsUserInfo.Tables[0].Rows[0]["FailedLoginCount"]))
+                //        {
+                //            throw new Exception("MaxFailedLoginAttempts");
+                //        }
+                //    }
+                //}
             }
 
             IDataReader dr = GetRoles(model.Login1Model.UserValue, authenticated, isLDAP);
@@ -185,16 +185,16 @@ namespace VIS.Helpers
             }
 
 
-            if (!authenticated)
-            {
-                DateTime? pwdExpireDate = Util.GetValueOfDateTime(dr["PasswordExpireOn"]);
-                if (pwdExpireDate == null || (passwordValidUpto > 0 && (DateTime.Compare(DateTime.Now, Convert.ToDateTime(pwdExpireDate)) > 0)))
-                {
-                    model.Login1Model.ResetPwd = true;
-                    //if (SecureEngine.IsEncrypted(model.Login1Model.Password))
-                    //    model.Login1Model.Password = SecureEngine.Decrypt(model.Login1Model.Password);
-                }
-            }
+            //if (!authenticated)
+            //{
+            //    DateTime? pwdExpireDate = Util.GetValueOfDateTime(dr["PasswordExpireOn"]);
+            //    if (pwdExpireDate == null || (passwordValidUpto > 0 && (DateTime.Compare(DateTime.Now, Convert.ToDateTime(pwdExpireDate)) > 0)))
+            //    {
+            //        model.Login1Model.ResetPwd = true;
+            //        //if (SecureEngine.IsEncrypted(model.Login1Model.Password))
+            //        //    model.Login1Model.Password = SecureEngine.Decrypt(model.Login1Model.Password);
+            //    }
+            //}
 
             roles = new List<KeyNamePair>(); //roles
 
@@ -283,7 +283,7 @@ namespace VIS.Helpers
             param[0] = new SqlParameter("@username", uname);
             StringBuilder sql = new StringBuilder("SELECT u.AD_User_ID, r.AD_Role_ID,r.Name,")
                // .Append(" u.ConnectionProfile, u.Password,u.FailedLoginCount,u.PasswordExpireOn, u.Is2FAEnabled, u.TokenKey2FA, u.Value ")	//	4,5
-               .Append(" u.ConnectionProfile, u.Password, u.FailedLoginCount, u.PasswordExpireOn, u.Is2FAEnabled, u.TokenKey2FA, u.Value, u.Name as username, u.Created ")	//	4,5
+               .Append(" u.ConnectionProfile, u.Password,  u.Value, u.Name as username, u.Created ")	//	4,5
                .Append("FROM AD_User u")
                .Append(" INNER JOIN AD_User_Roles ur ON (u.AD_User_ID=ur.AD_User_ID AND ur.IsActive='Y')")
                .Append(" INNER JOIN AD_Role r ON (ur.AD_Role_ID=r.AD_Role_ID AND r.IsActive='Y') ");
@@ -436,7 +436,7 @@ namespace VIS.Helpers
                 + " INNER JOIN AD_Org o ON (c.AD_Client_ID=o.AD_Client_ID OR o.AD_Org_ID=0) "
                 + "WHERE r.AD_Role_ID='" + AD_Role_ID + "'" 	//	#1
                 + " AND c.AD_Client_ID='" + AD_Client_ID + "'"	//	#2
-                + " AND o.IsActive='Y' AND o.IsSummary='N' AND o.IsCostCenter='N' AND o.IsProfitCenter='N' "
+                + " AND o.IsActive='Y' AND o.IsSummary='N' "
                 + " AND (r.IsAccessAllOrgs='Y' "
                     + "OR (r.IsUseUserOrgAccess='N' AND o.AD_Org_ID IN (SELECT AD_Org_ID FROM AD_Role_OrgAccess ra "
                         + "WHERE ra.AD_Role_ID=r.AD_Role_ID AND ra.IsActive='Y')) "

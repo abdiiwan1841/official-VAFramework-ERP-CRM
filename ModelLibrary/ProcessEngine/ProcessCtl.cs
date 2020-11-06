@@ -687,10 +687,7 @@ namespace VAdvantage.ProcessEngine
             String sql = "SELECT p.Name, p.procedureName,p.Classname, p.AD_Process_ID,"		//	1..4  
                 + " p.IsReport,p.IsDirectPrint,p.AD_ReportView_ID,p.AD_Workflow_ID,"		//	5..8
                 + " CASE WHEN COALESCE(p.Statistic_Count,0)=0 THEN 0 ELSE p.Statistic_Seconds/p.Statistic_Count END," //9
-                + " p.IsServerProcess, " //10
-                + " p.IsCrystalReport, "         // crystal  11...12
-                + " p.AD_ReportFormat_ID,  " //12
-                + "  p.AD_ReportMaster_ID  "  //13
+                + " p.IsServerProcess "
                 + " FROM AD_Process p"
                 + " INNER JOIN AD_PInstance i ON (p.AD_Process_ID=i.AD_Process_ID) "
 
