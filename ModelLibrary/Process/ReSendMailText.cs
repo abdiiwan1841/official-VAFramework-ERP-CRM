@@ -1,38 +1,24 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using VAdvantage.Classes;
-using VAdvantage.Common;
-using VAdvantage.Process;
-using VAdvantage.Model;
 using VAdvantage.DataBase;
-using VAdvantage.SqlExec;
-using VAdvantage.Utility;
-using System.Windows.Forms;
-using VAdvantage.ProcessEngine;
-
-using System.Data;
-using System.Data.SqlClient;
 using VAdvantage.Logging;
+using VAdvantage.Model;
+using VAdvantage.ProcessEngine;
+using VAdvantage.Utility;
 
 namespace VAdvantage.Process
 {
     public class ReSendMailText : ProcessEngine.SvrProcess
     {		
-        //	Mail Text				
-        private MMailText _MailText = null;
-        //	From (sender)			
-        private int _AD_User_ID = -1;
         // Client Info				
         private MClient _client = null;
         //	From					
         private MUser _from = null;
         private List<int> _list = new List<int>();
-        private int _counter = 0;
+        private string _msg;
         private int _errors = 0;
-
+        private MUserMail Usermail = null;
         protected override void Prepare()
         {
             ProcessInfoParameter[] para = GetParameter();
@@ -52,48 +38,35 @@ namespace VAdvantage.Process
 
         protected override String DoIt()
         {
-            MUserMail Usermail = new MUserMail(GetCtx(), GetRecord_ID(), Get_Trx());
-            log.Info("R_MailText_ID=" + Usermail.GetR_MailText_ID());
-            //	Mail Test
-            _MailText = new MMailText(GetCtx(), Usermail.GetR_MailText_ID(), Get_TrxName());
-            if (_MailText.GetR_MailText_ID() == 0)
-            {
-                throw new Exception("Not found @R_MailText_ID@=" + Usermail.GetR_MailText_ID());
-            }
+            Usermail = new MUserMail(GetCtx(), GetRecord_ID(), Get_Trx());
+
             //	Client Info
             _client = MClient.Get(GetCtx());
             if (_client.GetAD_Client_ID() == 0)
             {
-                throw new Exception("Not found @AD_Client_ID@");
+                return Msg.GetMessageText(GetCtx(),"Not found @AD_Client_ID@");
             }
             if (_client.GetSmtpHost() == null || _client.GetSmtpHost().Length == 0)
             {
-                throw new Exception("No SMTP Host found");
+                return Msg.GetMessageText(GetCtx(),"No SMTP Host found");
             }
-            //
+            // From Mail Info
             if (Usermail.GetCreatedBy() > 0)
             {
                 _from = new MUser(GetCtx(), Usermail.GetCreatedBy(), Get_TrxName());
-                if (_from.GetAD_User_ID() == 0)
-                {
-                    throw new Exception("No found @AD_User_ID@=" + Usermail.GetCreatedBy());
-                }
             }
             log.Fine("From " + _from);
-            long start = CommonFunctions.CurrentTimeMillis();
 
             Boolean ok = SendIndividualMail(Usermail.GetAD_User_ID(), Usermail.GetMailText());
             if (ok)
             {
-                _counter++;
+                _msg = Msg.GetMessageText(GetCtx(), "Mail Sent");
             }
             else
             {
-                _errors++;
+                _msg = Msg.GetMessageText(GetCtx(), "Mail Sending Failed");
             }
-
-            return "@Created@=" + _counter + ", @Errors@=" + _errors + " - "
-                + (CommonFunctions.CurrentTimeMillis() - start) + "ms";
+            return _msg;
         }
 
         private Boolean SendIndividualMail(int AD_User_ID, String message)
@@ -102,31 +75,23 @@ namespace VAdvantage.Process
             int ii = AD_User_ID;
             if (_list.Contains(ii))
             {
-                //return null;
                 return false;
             }
             _list.Add(ii);
-            //
+            // To Mail Info
             MUser to = new MUser(GetCtx(), AD_User_ID, null);
             if (to.IsEMailBounced())			//	ignore bounces
             {
-                //return null;
                 return false;
             }
-            _MailText.SetUser(AD_User_ID);		//	parse context
-            EMail email = _client.CreateEMail(_from, to, _MailText.GetMailHeader(), message);
+            EMail email = _client.CreateEMail(_from, to, Usermail.GetSubject(), message);
             if (email == null)
             {
-                //return Boolean.FALSE;
                 return false;
-            }
-            if (_MailText.IsHtml())
-            {
-                email.SetMessageHTML(_MailText.GetMailHeader(), message);
             }
             else
             {
-                email.SetSubject(_MailText.GetMailHeader());
+                email.SetSubject(Usermail.GetSubject());
                 email.SetMessageText(message);
             }
             if (!email.IsValid() && !email.IsValid(true))
@@ -135,7 +100,6 @@ namespace VAdvantage.Process
                 to.SetIsActive(false);
                 to.AddDescription("Invalid EMail");
                 to.Save();
-                //return Boolean.FALSE;
                 return false;
             }
             Boolean OK = EMail.SENT_OK.Equals(email.Send());
