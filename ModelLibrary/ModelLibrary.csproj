@@ -1806,6 +1806,7 @@
     <Compile Include="Process\RequestInvoice.cs" />
     <Compile Include="Process\RequestReOpen.cs" />
     <Compile Include="Process\RequisitionPOCreate.cs" />
+    <Compile Include="Process\ReSendMailText.cs" />
     <Compile Include="Process\RfQClose.cs" />
     <Compile Include="Process\RfQCopyLines.cs" />
     <Compile Include="Process\RfQCreate.cs" />
