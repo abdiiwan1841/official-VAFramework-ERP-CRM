@@ -1956,7 +1956,7 @@ namespace VIS.Models
         {
             List<Dictionary<string, object>> retWare = null;
             string sql = MRole.GetDefault(ctx).AddAccessSQL("SELECT M_Warehouse_ID, Value || ' - ' || Name AS ValueName FROM M_Warehouse WHERE IsActive='Y'",
-                    "M_Warehouse", MRole.SQL_NOTQUALIFIED, MRole.SQL_RO) + " ORDER BY Value";
+                    "M_Warehouse", MRole.SQL_NOTQUALIFIED, MRole.SQL_RO) + " ORDER BY Name";
             DataSet ds = DB.ExecuteDataset(sql, null, null);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
