@@ -67,6 +67,7 @@ namespace VAdvantage.Process
                    " AND PeriodStatus<>'"+MPeriodControl.PERIODSTATUS_PermanentlyClosed+"' AND AD_Org_ID IN (" + OrgId + ")";
 
                 sql = MRole.GetDefault(GetCtx()).AddAccessSQL(sql, "C_PeriodControl", true, true); // fully qualified - RO
+               
                 if ( Util.GetValueOfInt( DB.ExecuteQuery(sql, null, null)) == 0)
                 {
                     log.Log(Level.SEVERE, sql);
